@@ -1,0 +1,46 @@
+{
+  "name": "db9-wiki",
+  "version": "0.1.0",
+  "description": "Agent-native LLM Wiki powered by DB9",
+  "license": "BSD-3-Clause",
+  "author": "disksing",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/disksing/db9-wiki.git"
+  },
+  "bugs": {
+    "url": "https://github.com/disksing/db9-wiki/issues"
+  },
+  "homepage": "https://github.com/disksing/db9-wiki#readme",
+  "files": [
+    "dist",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE"
+  ],
+  "bin": {
+    "db9-wiki": "./dist/cli.js"
+  },
+  "scripts": {
+    "dev": "tsx src/cli.ts",
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "commander": "^13.1.0",
+    "get-db9": "^0.6.1",
+    "smol-toml": "^1.3.1",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.2",
+    "@types/ws": "^8.18.0",
+    "tsup": "^8.4.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}
