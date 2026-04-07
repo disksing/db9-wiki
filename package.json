@@ -20,7 +20,7 @@
     "LICENSE"
   ],
   "bin": {
-    "db9-wiki": "./dist/cli.js"
+    "db9-wiki": "dist/cli.js"
   },
   "scripts": {
     "dev": "tsx src/cli.ts",
