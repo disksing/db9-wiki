@@ -1,8 +1,6 @@
 # db9-wiki
 
-中文文档见：[README.zh-CN.md](./README.zh-CN.md)
-
-Agent-native LLM Wiki powered by [DB9](https://db9.io). Based on [Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
+Agent-native LLM Wiki powered by [DB9](https://db9.io). Based on [Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f). The readme is also available in [中文](./README.zh-CN.md).
 
 Instead of traditional RAG, the LLM incrementally builds and maintains a persistent wiki — a structured, interlinked collection of markdown files. Instead of embedding LLM calls in the tool itself, db9-wiki generates `AGENTS.md` + skill files so any AI agent (Claude Code, Cursor, Windsurf, etc.) can operate the wiki directly.
 
