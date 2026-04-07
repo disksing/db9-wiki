@@ -9,14 +9,12 @@ function escapeStr(s: string): string {
 }
 
 function escapeLiteral(s: string): string {
-  // Use dollar quoting to avoid all escaping issues
-  // Find a unique tag that doesn't appear in the string
-  let tag = "$txt$";
-  let i = 0;
-  while (s.includes(tag)) {
-    tag = `$txt${i++}$`;
-  }
-  return `${tag}${s}${tag}`;
+  return `E'${s
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "''")
+    .replace(/\n/g, "\\n")
+    .replace(/\r/g, "\\r")
+    .replace(/\t/g, "\\t")}'`;
 }
 
 function escapeArray(arr: string[]): string {

@@ -352,4 +352,45 @@ Closures are created every time a function is created.
       ["javascript/closures", "2026-04-07/mdn.txt"],
     ]);
   });
+
+  it("sync handles dollar-prefixed page content safely", async () => {
+    const cliPath = join(process.cwd(), "src/cli.ts");
+    try {
+      await readFile(join(testDir, "db9-wiki.toml"), "utf-8");
+    } catch {
+      run(`npx tsx ${cliPath} init --db ${dbId} --token ${token} --name "Test Wiki"`, testDir);
+    }
+
+    await writeFile(
+      join(testDir, "wiki", "shell-variables.md"),
+      `---
+title: Shell Variables
+description: Shell snippets with dollar-prefixed tokens
+tags: [shell, snippets]
+updated: 2026-04-07
+---
+
+# Shell Variables
+
+Keep shell snippets literal:
+
+\`\`\`
+status=$?;
+echo "$status";
+echo '$txt$';
+price=$5
+path='C:\\tmp\\wiki'
+\`\`\`
+`,
+    );
+
+    const output = run(`npx tsx ${cliPath} sync`, testDir);
+
+    expect(output).toContain("Sync complete");
+    expect(output).toContain("1 created");
+
+    const indexOutput = run(`npx tsx ${cliPath} index`, testDir);
+    expect(indexOutput).toContain("shell-variables");
+    expect(indexOutput).toContain("Shell Variables");
+  });
 });
