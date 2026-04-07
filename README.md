@@ -1,6 +1,6 @@
 # db9-wiki
 
-Agent-native LLM Wiki powered by [DB9](https://db9.io). Based on [Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f). The readme is also available in [中文](./README.zh-CN.md).
+Agent-native LLM Wiki powered by [DB9](https://db9.ai). Based on [Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f). The readme is also available in [中文](./README.zh-CN.md).
 
 Instead of traditional RAG, the LLM incrementally builds and maintains a persistent wiki — a structured, interlinked collection of markdown files. Instead of embedding LLM calls in the tool itself, db9-wiki generates `AGENTS.md` + skill files so any AI agent (Claude Code, Cursor, Windsurf, etc.) can operate the wiki directly.
 
@@ -31,7 +31,7 @@ User ↔ AI Agent (Claude Code / Cursor / ...)
 
 ## Quick Start
 
-Install DB9 first. The official site is [db9.io](https://db9.io).
+Install DB9 first. The official site is [db9.ai](https://db9.ai).
 
 ```bash
 # Install the DB9 CLI

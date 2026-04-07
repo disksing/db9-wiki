@@ -1,6 +1,6 @@
 # db9-wiki
 
-基于 [DB9](https://db9.io) 的 Agent 原生 LLM Wiki。灵感来自 [Karpathy 的 LLM Wiki 模式](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)。
+基于 [DB9](https://db9.ai) 的 Agent 原生 LLM Wiki。灵感来自 [Karpathy 的 LLM Wiki 模式](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)。
 
 不做传统 RAG，而是让 LLM 增量构建和维护一个持久化的 wiki —— 一组结构化、互相链接的 markdown 文件。db9-wiki 本身不调用 LLM，而是生成 `AGENTS.md` + skill 文件，让任意 AI agent（Claude Code、Cursor、Windsurf 等）直接操作 wiki。
 
@@ -31,7 +31,7 @@
 
 ## 快速开始
 
-先安装 DB9。官网见 [db9.io](https://db9.io)。
+先安装 DB9。官网见 [db9.ai](https://db9.ai)。
 
 ```bash
 # 安装 DB9 CLI
