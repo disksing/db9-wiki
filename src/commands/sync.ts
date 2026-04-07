@@ -2,19 +2,11 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { loadConfig } from "../config.js";
 import { createClient, execSql, initSchema } from "../db.js";
+import { escapeSqlLiteral, escapeSqlString } from "../utils/sql.js";
 import { collectSourceFiles, collectWikiPages, parseFrontmatter } from "../utils/wiki.js";
 
 function escapeStr(s: string): string {
-  return s.replace(/'/g, "''");
-}
-
-function escapeLiteral(s: string): string {
-  return `E'${s
-    .replace(/\\/g, "\\\\")
-    .replace(/'/g, "''")
-    .replace(/\n/g, "\\n")
-    .replace(/\r/g, "\\r")
-    .replace(/\t/g, "\\t")}'`;
+  return escapeSqlString(s);
 }
 
 function escapeArray(arr: string[]): string {
@@ -56,7 +48,7 @@ export async function syncCommand() {
     const { title, description, tags, sources } = parseFrontmatter(file.content);
     const pageTitle = title || file.slug;
     const pageDesc = description || "";
-    const embText = escapeLiteral(file.content.slice(0, 8000));
+    const embText = escapeSqlLiteral(file.content.slice(0, 8000));
 
     for (const sourcePath of sources) {
       pageSourceRows.push({ pageSlug: file.slug, sourcePath });
@@ -67,7 +59,7 @@ export async function syncCommand() {
       // New page
       await execSql(client, dbId, `
         INSERT INTO wiki_index (slug, title, description, content_hash, content_vec, tags)
-        VALUES ('${escapeStr(file.slug)}', ${escapeLiteral(pageTitle)}, ${escapeLiteral(pageDesc)},
+        VALUES ('${escapeStr(file.slug)}', ${escapeSqlLiteral(pageTitle)}, ${escapeSqlLiteral(pageDesc)},
                 '${file.hash}', embedding(${embText})::vector(1024),
                 ${escapeArray(tags)})
       `);
@@ -76,8 +68,8 @@ export async function syncCommand() {
       // Updated page
       await execSql(client, dbId, `
         UPDATE wiki_index
-        SET title = ${escapeLiteral(pageTitle)},
-            description = ${escapeLiteral(pageDesc)},
+        SET title = ${escapeSqlLiteral(pageTitle)},
+            description = ${escapeSqlLiteral(pageDesc)},
             content_hash = '${file.hash}',
             content_vec = embedding(${embText})::vector(1024),
             tags = ${escapeArray(tags)},
