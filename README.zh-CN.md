@@ -74,7 +74,7 @@ my-knowledge-base/
 └── sources/           # 原始来源文件
 ```
 
-用你的 AI agent 打开项目，开始使用 skill 操作 wiki。
+用你的 AI agent 打开项目，开始使用 skill 操作 wiki。比如用 Codex 打开这个目录，然后发送：`帮我把 /some/dir/documents.md 加入知识库。`
 
 ## CLI 命令
 

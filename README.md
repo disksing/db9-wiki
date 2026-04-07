@@ -1,5 +1,7 @@
 # db9-wiki
 
+中文文档见：[README.zh-CN.md](./README.zh-CN.md)
+
 Agent-native LLM Wiki powered by [DB9](https://db9.io). Based on [Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
 
 Instead of traditional RAG, the LLM incrementally builds and maintains a persistent wiki — a structured, interlinked collection of markdown files. Instead of embedding LLM calls in the tool itself, db9-wiki generates `AGENTS.md` + skill files so any AI agent (Claude Code, Cursor, Windsurf, etc.) can operate the wiki directly.
@@ -75,7 +77,7 @@ my-knowledge-base/
 └── sources/           # Raw source materials
 ```
 
-Now open the project with your AI agent and start using the skills.
+Now open the project with your AI agent and start using the skills. For example, open the folder in Codex and send: `Help me add /some/dir/documents.md into the knowledge base.`
 
 ## CLI Commands
 
