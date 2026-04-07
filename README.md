@@ -35,18 +35,22 @@ Install DB9 first. The official site is [db9.io](https://db9.io).
 
 ```bash
 # Install the DB9 CLI
-npm install -g @db9/cli
+curl -fsSL https://db9.ai/install | sh
 
 # Install db9-wiki
 npm install -g db9-wiki
 ```
 
 ```bash
+# It is recommended to log in first so your DB9 data is tied to your account
+# and won't be lost with an expiring temporary account
+db9 login
+
 # Create a DB9 database
 db9 create --name my-wiki
 
 # Create an API token
-db9 token create --name wiki-agent
+db9 token create --name wiki-agent --expires-in-days 36500
 
 # Initialize the wiki
 cd my-knowledge-base

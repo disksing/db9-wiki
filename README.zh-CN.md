@@ -35,18 +35,21 @@
 
 ```bash
 # 安装 DB9 CLI
-npm install -g @db9/cli
+curl -fsSL https://db9.ai/install | sh
 
 # 安装 db9-wiki
 npm install -g db9-wiki
 ```
 
 ```bash
+# 建议先登录，避免使用临时账号时数据过期后被删除
+db9 login
+
 # 创建 DB9 数据库
 db9 create --name my-wiki
 
 # 创建 API token
-db9 token create --name wiki-agent
+db9 token create --name wiki-agent --expires-in-days 36500
 
 # 初始化 wiki
 cd my-knowledge-base
