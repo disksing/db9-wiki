@@ -31,6 +31,16 @@
 
 ## 快速开始
 
+先安装 DB9。官网见 [db9.io](https://db9.io)。
+
+```bash
+# 安装 DB9 CLI
+npm install -g @db9/cli
+
+# 安装 db9-wiki
+npm install -g db9-wiki
+```
+
 ```bash
 # 创建 DB9 数据库
 db9 create --name my-wiki

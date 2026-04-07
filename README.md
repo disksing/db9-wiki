@@ -31,6 +31,16 @@ User ↔ AI Agent (Claude Code / Cursor / ...)
 
 ## Quick Start
 
+Install DB9 first. The official site is [db9.io](https://db9.io).
+
+```bash
+# Install the DB9 CLI
+npm install -g @db9/cli
+
+# Install db9-wiki
+npm install -g db9-wiki
+```
+
 ```bash
 # Create a DB9 database
 db9 create --name my-wiki
