@@ -1,6 +1,6 @@
 {
   "name": "db9-wiki",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Agent-native LLM Wiki powered by DB9",
   "license": "BSD-3-Clause",
   "author": "disksing",
