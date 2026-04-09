@@ -111,15 +111,17 @@ export async function initCommand(db: string, token: string, name: string) {
 
   // Write .gitignore entry for config (contains credentials)
   const gitignorePath = join(dir, ".gitignore");
+  const ignoreEntries = ["db9-wiki.toml", ".db9-wiki/"];
   try {
     const { readFile } = await import("node:fs/promises");
     const existing = await readFile(gitignorePath, "utf-8");
-    if (!existing.includes("db9-wiki.toml")) {
-      await writeFile(gitignorePath, existing.trimEnd() + "\ndb9-wiki.toml\n", "utf-8");
+    const missingEntries = ignoreEntries.filter((entry) => !existing.includes(entry));
+    if (missingEntries.length > 0) {
+      await writeFile(gitignorePath, `${existing.trimEnd()}\n${missingEntries.join("\n")}\n`, "utf-8");
       console.log(`  update .gitignore`);
     }
   } catch {
-    await writeFile(gitignorePath, "db9-wiki.toml\n", "utf-8");
+    await writeFile(gitignorePath, `${ignoreEntries.join("\n")}\n`, "utf-8");
     console.log(`  create .gitignore`);
   }
 

@@ -3,17 +3,39 @@ import { basename, extname, join, relative } from "node:path";
 import { contentHash } from "./hash.js";
 
 export interface WikiPageFile {
+  fullPath: string;
   path: string;
   slug: string;
   shortName: string;
   content: string;
   hash: string;
+  size: number;
+  mtimeMs: number;
 }
 
 export interface SourceFile {
+  fullPath: string;
   path: string;
   bytes: Uint8Array;
   hash: string;
+  size: number;
+  mtimeMs: number;
+}
+
+export interface WikiPageEntry {
+  fullPath: string;
+  path: string;
+  slug: string;
+  shortName: string;
+  size: number;
+  mtimeMs: number;
+}
+
+export interface SourceFileEntry {
+  fullPath: string;
+  path: string;
+  size: number;
+  mtimeMs: number;
 }
 
 export interface FrontmatterData {
@@ -29,8 +51,8 @@ export interface WikiLink {
   display: string | null;
 }
 
-export async function collectWikiPages(dir: string, base: string = dir): Promise<WikiPageFile[]> {
-  const entries: WikiPageFile[] = [];
+export async function collectWikiPageEntries(dir: string, base: string = dir): Promise<WikiPageEntry[]> {
+  const entries: WikiPageEntry[] = [];
   let items: string[];
 
   try {
@@ -43,28 +65,28 @@ export async function collectWikiPages(dir: string, base: string = dir): Promise
     const full = join(dir, item);
     const s = await stat(full);
     if (s.isDirectory()) {
-      entries.push(...(await collectWikiPages(full, base)));
+      entries.push(...(await collectWikiPageEntries(full, base)));
       continue;
     }
     if (extname(item) !== ".md") continue;
 
-    const content = await readFile(full, "utf-8");
     const rel = relative(base, full);
     const slug = rel.replace(/\.md$/, "");
     entries.push({
+      fullPath: full,
       path: rel,
       slug,
       shortName: basename(rel, ".md"),
-      content,
-      hash: contentHash(content),
+      size: s.size,
+      mtimeMs: s.mtimeMs,
     });
   }
 
   return entries;
 }
 
-export async function collectSourceFiles(dir: string, base: string = dir): Promise<SourceFile[]> {
-  const entries: SourceFile[] = [];
+export async function collectSourceFileEntries(dir: string, base: string = dir): Promise<SourceFileEntry[]> {
+  const entries: SourceFileEntry[] = [];
   let items: string[];
 
   try {
@@ -77,19 +99,54 @@ export async function collectSourceFiles(dir: string, base: string = dir): Promi
     const full = join(dir, item);
     const s = await stat(full);
     if (s.isDirectory()) {
-      entries.push(...(await collectSourceFiles(full, base)));
+      entries.push(...(await collectSourceFileEntries(full, base)));
       continue;
     }
-
-    const bytes = await readFile(full);
     entries.push({
+      fullPath: full,
       path: relative(base, full),
-      bytes,
-      hash: contentHash(bytes),
+      size: s.size,
+      mtimeMs: s.mtimeMs,
     });
   }
 
   return entries;
+}
+
+export async function loadWikiPage(entry: WikiPageEntry): Promise<WikiPageFile> {
+  const content = await readFile(entry.fullPath, "utf-8");
+  return {
+    fullPath: entry.fullPath,
+    path: entry.path,
+    slug: entry.slug,
+    shortName: entry.shortName,
+    content,
+    hash: contentHash(content),
+    size: entry.size,
+    mtimeMs: entry.mtimeMs,
+  };
+}
+
+export async function loadSourceFile(entry: SourceFileEntry): Promise<SourceFile> {
+  const bytes = await readFile(entry.fullPath);
+  return {
+    fullPath: entry.fullPath,
+    path: entry.path,
+    bytes,
+    hash: contentHash(bytes),
+    size: entry.size,
+    mtimeMs: entry.mtimeMs,
+  };
+}
+
+export async function collectWikiPages(dir: string, base: string = dir): Promise<WikiPageFile[]> {
+  const entries = await collectWikiPageEntries(dir, base);
+  return Promise.all(entries.map(loadWikiPage));
+}
+
+export async function collectSourceFiles(dir: string, base: string = dir): Promise<SourceFile[]> {
+  const entries = await collectSourceFileEntries(dir, base);
+  return Promise.all(entries.map(loadSourceFile));
 }
 
 export function parseFrontmatter(content: string): FrontmatterData {

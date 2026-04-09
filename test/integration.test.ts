@@ -114,6 +114,7 @@ describe("db9-wiki integration", () => {
 
     const gitignore = await readFile(join(testDir, ".gitignore"), "utf-8");
     expect(gitignore).toContain("db9-wiki.toml");
+    expect(gitignore).toContain(".db9-wiki/");
   });
 
   it("init pulls existing remote wiki data", async () => {
@@ -219,6 +220,31 @@ Promises represent eventual completion of async operations.
       ["javascript/closures", "2026-04-07/mdn.txt"],
       ["javascript/promises", "2026-04-07/mdn.txt"],
     ]);
+  });
+
+  it("sync skips unchanged fs9 files and prints progress logs", async () => {
+    const cliPath = join(process.cwd(), "src/cli.ts");
+    const output = run(`npx tsx ${cliPath} sync`, testDir);
+
+    expect(output).toContain("Collected 2 wiki pages and 1 source files.");
+    expect(output).toContain("Using lightweight sync since");
+    expect(output).toContain("Checking page-source references (0 affected pages)...");
+    expect(output).toContain("no page-source changes detected");
+    expect(output).toContain("Syncing to fs9...");
+    expect(output).toContain("fs9 sync complete (0 written, 0 skipped, 0 removed)");
+    expect(output).toContain("wiki:    0 created, 0 updated, 0 deleted, 2 unchanged");
+
+    const state = JSON.parse(await readFile(join(testDir, ".db9-wiki", "sync-state.json"), "utf-8"));
+    expect(state.lastSuccessfulSyncAt).toBeTypeOf("string");
+  });
+
+  it("sync --full keeps full scan behavior", async () => {
+    const cliPath = join(process.cwd(), "src/cli.ts");
+    const output = run(`npx tsx ${cliPath} sync --full`, testDir);
+
+    expect(output).toContain("Running full sync...");
+    expect(output).toContain("Checking page-source references (2 links)...");
+    expect(output).toContain("page-source links unchanged; skipping rebuild");
   });
 
   it("index lists all pages", async () => {
@@ -336,6 +362,7 @@ Closures are created every time a function is created.
     const cliPath = join(process.cwd(), "src/cli.ts");
     const output = run(`npx tsx ${cliPath} sync`, testDir);
 
+    expect(output).toContain("Using lightweight sync since");
     expect(output).toContain("1 updated");
     expect(output).toContain("1 deleted");
     expect(output).toContain("sources: 1 files synced, 1 referenced, 1 page-source links");
@@ -351,6 +378,22 @@ Closures are created every time a function is created.
     expect(relationResult.rows).toEqual([
       ["javascript/closures", "2026-04-07/mdn.txt"],
     ]);
+    expect(await db9Client.fs.exists(dbId, "/wiki/javascript/promises.md")).toBe(false);
+  });
+
+  it("lightweight sync removes deleted source files from fs9", async () => {
+    const cliPath = join(process.cwd(), "src/cli.ts");
+    const tempSourcePath = join(testDir, "sources", "2026-04-07", "notes.txt");
+
+    await writeFile(tempSourcePath, "temporary note");
+    run(`npx tsx ${cliPath} sync`, testDir);
+    expect(await db9Client.fs.exists(dbId, "/sources/2026-04-07/notes.txt")).toBe(true);
+
+    await rm(tempSourcePath);
+    const output = run(`npx tsx ${cliPath} sync`, testDir);
+
+    expect(output).toContain("1 source files deleted");
+    expect(await db9Client.fs.exists(dbId, "/sources/2026-04-07/notes.txt")).toBe(false);
   });
 
   it("sync handles dollar-prefixed page content safely", async () => {

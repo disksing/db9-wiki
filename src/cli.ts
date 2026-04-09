@@ -10,7 +10,7 @@ const program = new Command();
 program
   .name("db9-wiki")
   .description("Agent-native LLM Wiki powered by DB9")
-  .version("0.1.0");
+  .version("0.1.1");
 
 program
   .command("init")
@@ -25,8 +25,9 @@ program
 program
   .command("sync")
   .description("Sync local wiki to DB9 (fs9 backup + vector index)")
-  .action(async () => {
-    await syncCommand();
+  .option("--full", "Force a full sync instead of using the last successful sync timestamp")
+  .action(async (opts) => {
+    await syncCommand({ full: opts.full });
   });
 
 program
