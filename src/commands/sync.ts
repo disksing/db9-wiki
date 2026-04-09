@@ -41,6 +41,14 @@ interface SyncState {
   hasLogFile: boolean;
 }
 
+function isEntryChanged(
+  entry: { path: string; mtimeMs: number },
+  lastSyncMs: number,
+  previousPaths: Set<string>,
+): boolean {
+  return entry.mtimeMs > lastSyncMs || !previousPaths.has(entry.path);
+}
+
 function escapeStr(s: string): string {
   return escapeSqlString(s);
 }
@@ -487,8 +495,10 @@ async function performLightweightSync(
 
   const currentWikiPaths = new Set(wikiEntries.map((entry) => entry.path));
   const currentSourcePaths = new Set(sourceEntries.map((entry) => entry.path));
-  const changedWikiEntries = wikiEntries.filter((entry) => entry.mtimeMs > lastSyncMs);
-  const changedSourceEntries = sourceEntries.filter((entry) => entry.mtimeMs > lastSyncMs);
+  const previousWikiPaths = new Set(state.wikiPaths);
+  const previousSourcePaths = new Set(state.sourcePaths);
+  const changedWikiEntries = wikiEntries.filter((entry) => isEntryChanged(entry, lastSyncMs, previousWikiPaths));
+  const changedSourceEntries = sourceEntries.filter((entry) => isEntryChanged(entry, lastSyncMs, previousSourcePaths));
   const deletedWikiPaths = state.wikiPaths.filter((path) => !currentWikiPaths.has(path));
   const deletedWikiSlugs = state.wikiPaths
     .filter((path) => !currentWikiPaths.has(path))
@@ -586,7 +596,9 @@ async function performLightweightSync(
         write: () => fsClient.writeFile(`/sources/${file.path}`, file.bytes),
       }));
       const actualLogSyncFile = await buildLogSyncFile(dir, (path, content) => fsClient.writeFile(path, content));
-      const changedLogSyncFile = actualLogSyncFile && actualLogSyncFile.mtimeMs > lastSyncMs ? [actualLogSyncFile] : [];
+      const changedLogSyncFile = actualLogSyncFile && (actualLogSyncFile.mtimeMs > lastSyncMs || !state.hasLogFile)
+        ? [actualLogSyncFile]
+        : [];
       const deletedRemotePaths = [
         ...deletedWikiPaths.map((path) => `/wiki/${path}`),
         ...deletedSourcePaths.map((path) => `/sources/${path}`),

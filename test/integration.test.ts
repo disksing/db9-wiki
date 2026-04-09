@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { execSync } from "node:child_process";
-import { mkdtemp, rm, readFile, writeFile, mkdir, readdir, lstat, readlink } from "node:fs/promises";
+import { mkdtemp, rm, readFile, writeFile, mkdir, readdir, lstat, readlink, utimes } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { createDb9Client } from "get-db9";
@@ -394,6 +394,34 @@ Closures are created every time a function is created.
 
     expect(output).toContain("1 source files deleted");
     expect(await db9Client.fs.exists(dbId, "/sources/2026-04-07/notes.txt")).toBe(false);
+  });
+
+  it("lightweight sync detects newly added files even with older mtimes", async () => {
+    const cliPath = join(process.cwd(), "src/cli.ts");
+    const staleWikiPath = join(testDir, "wiki", "stale-import.md");
+
+    await writeFile(
+      staleWikiPath,
+      `---
+title: Stale Import
+description: Added after the last sync but with an older mtime
+tags: [test]
+updated: 2026-04-07
+---
+
+# Stale Import
+
+Imported later, but timestamp preserved.
+`,
+    );
+    await utimes(staleWikiPath, new Date("2020-01-01T00:00:00.000Z"), new Date("2020-01-01T00:00:00.000Z"));
+
+    const output = run(`npx tsx ${cliPath} sync`, testDir);
+
+    expect(output).toContain("1 created");
+
+    const indexOutput = run(`npx tsx ${cliPath} index`, testDir);
+    expect(indexOutput).toContain("stale-import");
   });
 
   it("sync handles dollar-prefixed page content safely", async () => {
