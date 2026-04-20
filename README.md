@@ -1,5 +1,7 @@
 # db9-wiki
 
+> **Archived:** this repository has been archived and is no longer maintained. Please use **tidb9-ai** instead: https://github.com/db9-ai/tidb9-ai
+
 Agent-native LLM Wiki powered by [DB9](https://db9.ai). Based on [Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f). The readme is also available in [中文](./README.zh-CN.md).
 
 Instead of traditional RAG, the LLM incrementally builds and maintains a persistent wiki — a structured, interlinked collection of markdown files. Instead of embedding LLM calls in the tool itself, db9-wiki generates `AGENTS.md` + skill files so any AI agent (Claude Code, Cursor, Windsurf, etc.) can operate the wiki directly.
