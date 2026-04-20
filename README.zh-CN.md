@@ -1,6 +1,6 @@
 # db9-wiki
 
-> **已归档：** 这个仓库已经 archive，不再继续维护。请改用 **tidb9-ai**：https://github.com/db9-ai/tidb9-ai
+> **已归档：** 这个仓库已经 archive，不再继续维护。请改用 **wiki9**：https://github.com/db9-ai/wiki9
 
 基于 [DB9](https://db9.ai) 的 Agent 原生 LLM Wiki。灵感来自 [Karpathy 的 LLM Wiki 模式](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)。
 
